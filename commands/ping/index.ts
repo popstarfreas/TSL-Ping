@@ -8,7 +8,7 @@ import CommandHandlers from "../../../../commandhandlers";
 import getWorldInfo from "../../../../packets/worldinfo";
 
 class PingCommand extends CommandHandler {
-    public name = "ping";
+    public names = ["ping"];
     public permission = "";
 
     constructor(commandHandlers: CommandHandlers) {
@@ -34,7 +34,7 @@ class PingCommand extends CommandHandler {
             .packInt16(20) // item net id
             .data;
 
-        client.sendPacket(new Buffer(worldInfoSSC + slotUpdate + worldInfoNonSSC, "hex"));
+        client.sendPacket(Buffer.concat([worldInfoSSC, slotUpdate, worldInfoNonSSC]));
         client.extProperties.set("ping-inprogress", {
             timestamp: Date.now()
         });
