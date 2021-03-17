@@ -1,11 +1,11 @@
 
-import PacketWriter from "dimensions/packets/packetwriter";
-import PacketTypes from "dimensions/packettypes";
-import Client from "../../../../client";
-import Command from "../../../../command";
-import CommandHandler from "../../../../commandhandler";
-import CommandHandlers from "../../../../commandhandlers";
-import getWorldInfo from "../../../../packets/worldinfo";
+import PacketWriter from "@popstarfreas/packetfactory/packetwriter";
+import PacketTypes from "terrariaserver-lite/packettypes";
+import Client from "terrariaserver-lite/client";
+import Command from "terrariaserver-lite/command";
+import CommandHandler from "terrariaserver-lite/commandhandler";
+import CommandHandlers from "terrariaserver-lite/commandhandlers";
+import getWorldInfo from "terrariaserver-lite/packets/worldinfo";
 
 class PingCommand extends CommandHandler {
     public names = ["ping"];

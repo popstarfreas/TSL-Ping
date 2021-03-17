@@ -1,9 +1,8 @@
-import PacketReader from "dimensions/packets/packetreader";
-import PacketWriter from "dimensions/packets/packetwriter";
-import PacketTypes from "dimensions/packettypes";
-import Client from "../../client";
-import GenericPacketHandler from "../../handlers/genericpackethandler";
-import Packet from "../../packet";
+import PacketReader from "@popstarfreas/packetfactory/packetreader";
+import PacketTypes from "terrariaserver-lite/packettypes";
+import Client from "terrariaserver-lite/client";
+import GenericPacketHandler from "terrariaserver-lite/handlers/genericpackethandler";
+import Packet from "terrariaserver-lite/packet";
 import Ping from "./";
 
 class PacketHandler implements GenericPacketHandler {
@@ -27,7 +26,7 @@ class PacketHandler implements GenericPacketHandler {
     private handlePlayerInventorySlot(client: Client, packet: Packet): boolean {
         const reader = new PacketReader(packet.data);
         reader.readByte();
-        const slot = reader.readByte();
+        const slot = reader.readInt16();
 
         if (slot === 139 && client.extProperties.has("ping-inprogress")) {
             const pingInfo = client.extProperties.get("ping-inprogress");

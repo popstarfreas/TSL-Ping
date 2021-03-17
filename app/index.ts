@@ -1,9 +1,5 @@
-import * as Winston from "winston";
-import ChatMessage from "../../chatmessage";
-import Client from "../../client";
-import Database from "../../database";
-import TerrariaServer from "../../terrariaserver";
-import Extension from "../extension";
+import TerrariaServer from "terrariaserver-lite/terrariaserver";
+import Extension from "terrariaserver-lite/extensions/extension";
 import PacketHandler from "./packethandler";
 
 class Ping extends Extension {
