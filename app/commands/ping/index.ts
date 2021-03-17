@@ -16,12 +16,11 @@ class PingCommand extends CommandHandler {
     }
 
     public handle(command: Command, client: Client): void {
-        const spawn = client.server.config.spawn;
-        const worldInfoSSC = getWorldInfo(spawn, {
+        const worldInfoSSC = getWorldInfo(client.server.world, {
             SSC: true,
             notExpert: !client.server.config.expert
         });
-        const worldInfoNonSSC = getWorldInfo(spawn, {
+        const worldInfoNonSSC = getWorldInfo(client.server.world, {
             SSC: false,
             notExpert: !client.server.config.expert
         });
