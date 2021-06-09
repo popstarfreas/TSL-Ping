@@ -28,8 +28,7 @@ class PacketHandler implements GenericPacketHandler {
         const itemId = reader.readInt16();
         const playerId = reader.readByte();
 
-        console.log(itemId, playerId);
-        if (itemId === 400 && client.extProperties.has("ping-inprogress")) {
+        if (itemId === 400 && playerId === 255 && client.extProperties.has("ping-inprogress")) {
             const pingInfo = client.extProperties.get("ping-inprogress");
             const ping = (Date.now() - pingInfo.timestamp);
             client.extProperties.delete("ping-inprogress");
