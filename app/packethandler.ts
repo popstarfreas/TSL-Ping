@@ -15,20 +15,20 @@ class PacketHandler implements GenericPacketHandler {
     public handlePacket(client: Client, packet: Packet): boolean {
         let handled = false;
         switch (packet.packetType) {
-            case PacketTypes.PlayerInventorySlot:
-                handled = this.handlePlayerInventorySlot(client, packet);
+            case PacketTypes.UpdateItemOwner:
+                handled = this.handleUpdateItemOwner(client, packet);
                 break;
         }
 
         return handled;
     }
 
-    private handlePlayerInventorySlot(client: Client, packet: Packet): boolean {
+    private handleUpdateItemOwner(client: Client, packet: Packet): boolean {
         const reader = new PacketReader(packet.data);
-        reader.readByte();
-        const slot = reader.readInt16();
+        const itemId = reader.readInt16();
+        const playerId = reader.readByte();
 
-        if (slot === 139 && client.extProperties.has("ping-inprogress")) {
+        if (itemId === 400 && playerId === 255 && client.extProperties.has("ping-inprogress")) {
             const pingInfo = client.extProperties.get("ping-inprogress");
             const ping = (Date.now() - pingInfo.timestamp);
             client.extProperties.delete("ping-inprogress");
