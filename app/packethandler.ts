@@ -26,7 +26,7 @@ class PacketHandler implements GenericPacketHandler {
     private handleUpdateItemOwner(client: Client, packet: Packet): boolean {
         const reader = new PacketReader(packet.data);
         const itemId = reader.readInt16();
-        const playerId = reader.readInt16();
+        const playerId = reader.readByte();
 
         console.log(itemId, playerId);
         if (itemId === 400 && client.extProperties.has("ping-inprogress")) {
