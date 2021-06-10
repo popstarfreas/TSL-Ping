@@ -101,8 +101,8 @@ class PacketHandler implements GenericPacketHandler {
                 jitter /= pingInfo.pings.length - 1;
                 const jitterPercentage = jitter / avg;
                 client.extProperties.delete("ping-inprogress");
-                client.sendChatMessage(`Max: ${max}. Min: ${min}. Average: ${avg.toFixed(1)}ms. Jitter: ${jitter.toFixed(1)} (${(jitterPercentage * 100).toFixed(0)}%).`);
-                client.sendChatMessage(`Ping Remark: ${this.getPingRemark(avg)} Jitter Remark: ${this.getJitterRemark(jitterPercentage)}`);
+                client.sendChatMessage(`[c/1CBAFF:Max:] ${max}. [c/1CBAFF:Min:] ${min}. [c/1CBAFF:Average:] ${avg.toFixed(1)}ms. [c/1CBAFF:Jitter:] ${jitter.toFixed(1)}ms (${(jitterPercentage * 100).toFixed(0)}%).`);
+                client.sendChatMessage(`[c/1CBAFF:Ping Remark:] ${this.getPingRemark(avg)} [c/1CBAFF:Jitter Remark:] ${this.getJitterRemark(jitterPercentage)}`);
             } else {
                 const pingPacket = new PacketWriter()
                     .setType(PacketTypes.RemoveItemOwner)
