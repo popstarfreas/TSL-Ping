@@ -4,6 +4,8 @@ import Client from "terrariaserver-lite/client";
 import GenericPacketHandler from "terrariaserver-lite/handlers/genericpackethandler";
 import Packet from "terrariaserver-lite/packet";
 import Ping from "./";
+import PingInfo from "./pinginfo";
+import PacketWriter from "@popstarfreas/packetfactory/packetwriter";
 
 class PacketHandler implements GenericPacketHandler {
     private _ping: Ping;
@@ -28,11 +30,24 @@ class PacketHandler implements GenericPacketHandler {
         const itemId = reader.readInt16();
         const playerId = reader.readByte();
 
-        if (itemId === 400 && playerId === 255 && client.extProperties.has("ping-inprogress")) {
-            const pingInfo = client.extProperties.get("ping-inprogress");
-            const ping = (Date.now() - pingInfo.timestamp);
-            client.extProperties.delete("ping-inprogress");
-            client.sendChatMessage(`Ping: ${ping}ms`);
+        if (itemId === 400 && playerId === 255 && client.extProperties.has(Ping.inprogressKey)) {
+            const pingInfo: PingInfo = client.extProperties.get(Ping.inprogressKey);
+            const ping = (Date.now() - pingInfo.lastTimestamp);
+            pingInfo.pings.push(ping);
+            if (pingInfo.pings.length >= 10) {
+                const max = Math.max(...pingInfo.pings);
+                const min = Math.min(...pingInfo.pings);
+                const avg = pingInfo.pings.reduce((acc, value) => acc + value, 0) / pingInfo.pings.length;
+                client.extProperties.delete("ping-inprogress");
+                client.sendChatMessage(`Max: ${max}. Min: ${min}. Average: ${avg}ms`);
+            } else {
+                const pingPacket = new PacketWriter()
+                    .setType(PacketTypes.RemoveItemOwner)
+                    .packInt16(400)
+                    .data;
+
+                client.sendPacket(pingPacket);
+            }
         }
 
         return false;

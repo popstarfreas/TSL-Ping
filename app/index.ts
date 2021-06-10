@@ -6,6 +6,8 @@ class Ping extends Extension {
     public name = "Ping";
     public version = "v1.0";
 
+    public static inprogressKey = "ping-inprogress";
+
     constructor(server: TerrariaServer) {
         super(server);
         this.packetHandler = new PacketHandler(this);

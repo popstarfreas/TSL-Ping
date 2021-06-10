@@ -5,6 +5,7 @@ import Client from "terrariaserver-lite/client";
 import Command from "terrariaserver-lite/command";
 import CommandHandler from "terrariaserver-lite/commandhandler";
 import CommandHandlers from "terrariaserver-lite/commandhandlers";
+import Ping from "../../";
 
 class PingCommand extends CommandHandler {
     public names = ["ping"];
@@ -15,13 +16,13 @@ class PingCommand extends CommandHandler {
     }
 
     public handle(_command: Command, client: Client): void {
-        const slotUpdate = new PacketWriter()
+        const pingPacket = new PacketWriter()
             .setType(PacketTypes.RemoveItemOwner)
             .packInt16(400)
             .data;
 
-        client.sendPacket(slotUpdate);
-        client.extProperties.set("ping-inprogress", {
+        client.sendPacket(pingPacket);
+        client.extProperties.set(Ping.inprogressKey, {
             timestamp: Date.now()
         });
     }
