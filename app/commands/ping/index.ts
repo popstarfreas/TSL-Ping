@@ -17,6 +17,7 @@ class PingCommand extends CommandHandler {
     }
 
     public handle(_command: Command, client: Client): void {
+        client.sendChatMessage("Measuring. Please wait.");
         const pingPacket = new PacketWriter()
             .setType(PacketTypes.RemoveItemOwner)
             .packInt16(400)
@@ -25,7 +26,8 @@ class PingCommand extends CommandHandler {
         client.sendPacket(pingPacket);
         const info: PingInfo = {
             pings: [],
-            lastTimestamp: Date.now()
+            lastTimestamp: Date.now(),
+            samplesLeft: 100,
         }
         client.extProperties.set(Ping.inprogressKey, info);
     }
