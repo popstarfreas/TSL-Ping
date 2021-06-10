@@ -25,6 +25,62 @@ class PacketHandler implements GenericPacketHandler {
         return handled;
     }
 
+    private getJitterRemark(jitterPercentage: number): string {
+        if (jitterPercentage >= 0.3) {
+            return "Really bad.";
+        }
+
+        if (jitterPercentage >= 0.2) {
+            return "High. Inconsistencies should be noticeable.";
+        }
+
+        if (jitterPercentage >= 0.15) {
+            return "Moderate. Inconsistencies slightly noticeable.";
+        }
+
+        if (jitterPercentage >= 0.1) {
+            return "Fairly good.";
+        }
+
+        if (jitterPercentage >= 0.01) {
+            return "Amazing.";
+        }
+
+        return "Outstanding. Do you literally live in the datacenter?";
+    }
+
+    private getPingRemark(averagePing: number): string {
+        if (averagePing >= 300) {
+            return "Really bad.";
+        }
+
+        if (averagePing >= 150) {
+            return "High. Delay should be noticeable.";
+        }
+
+        if (averagePing >= 100) {
+            return "Moderately high. Delay slightly noticeable.";
+        }
+
+        if (averagePing >= 80) {
+            return "Moderate. Delay possibly noticeable.";
+        }
+
+        if (averagePing >= 50) {
+            return "Fairly good.";
+        }
+
+        if (averagePing >= 30) {
+            return "Very good.";
+        }
+
+        if (averagePing >= 20) {
+            return "Amazing.";
+        }
+
+        return "Outstanding. Do you literally live in the datacenter?";
+    }
+
     private handleUpdateItemOwner(client: Client, packet: Packet): boolean {
         const reader = new PacketReader(packet.data);
         const itemId = reader.readInt16();
@@ -34,12 +90,19 @@ class PacketHandler implements GenericPacketHandler {
             const pingInfo: PingInfo = client.extProperties.get(Ping.inprogressKey);
             const ping = (Date.now() - pingInfo.lastTimestamp);
             pingInfo.pings.push(ping);
-            if (pingInfo.pings.length >= 10) {
+            if (pingInfo.pings.length >= 100) {
                 const max = Math.max(...pingInfo.pings);
                 const min = Math.min(...pingInfo.pings);
                 const avg = pingInfo.pings.reduce((acc, value) => acc + value, 0) / pingInfo.pings.length;
+                let jitter = 0;
+                for (let i = 0; i < pingInfo.pings.length - 1; i++) {
+                    jitter += Math.abs(pingInfo.pings[i] - pingInfo.pings[i + 1]);
+                }
+                jitter /= pingInfo.pings.length - 1;
+                const jitterPercentage = jitter / avg;
                 client.extProperties.delete("ping-inprogress");
-                client.sendChatMessage(`Max: ${max}. Min: ${min}. Average: ${avg}ms`);
+                client.sendChatMessage(`Max: ${max}. Min: ${min}. Average: ${avg}ms. Jitter: ${jitter} (${jitterPercentage}%).`);
+                client.sendChatMessage(`Ping Remark: ${this.getPingRemark(avg)} Jitter Remark: ${this.getJitterRemark(jitterPercentage)}`);
             } else {
                 const pingPacket = new PacketWriter()
                     .setType(PacketTypes.RemoveItemOwner)
