@@ -31,11 +31,11 @@ class PacketHandler implements GenericPacketHandler {
         }
 
         if (jitterPercentage >= 0.2) {
-            return "High. Inconsistencies should be noticeable.";
+            return "High.";
         }
 
         if (jitterPercentage >= 0.15) {
-            return "Moderate. Inconsistencies slightly noticeable.";
+            return "Moderate.";
         }
 
         if (jitterPercentage >= 0.1) {
@@ -46,7 +46,7 @@ class PacketHandler implements GenericPacketHandler {
             return "Amazing.";
         }
 
-        return "Outstanding. Do you literally live in the datacenter?";
+        return "Outstanding.";
     }
 
     private getPingRemark(averagePing: number): string {
