@@ -6,6 +6,7 @@ import Command from "terrariaserver-lite/command";
 import CommandHandler from "terrariaserver-lite/commandhandler";
 import CommandHandlers from "terrariaserver-lite/commandhandlers";
 import Ping from "../../";
+import PingInfo from "../../pinginfo";
 
 class PingCommand extends CommandHandler {
     public names = ["ping"];
@@ -22,9 +23,11 @@ class PingCommand extends CommandHandler {
             .data;
 
         client.sendPacket(pingPacket);
-        client.extProperties.set(Ping.inprogressKey, {
-            timestamp: Date.now()
-        });
+        const info: PingInfo = {
+            pings: [],
+            lastTimestamp: Date.now()
+        }
+        client.extProperties.set(Ping.inprogressKey, info);
     }
 }
 
