@@ -46,6 +46,7 @@ class PacketHandler implements GenericPacketHandler {
                     .packInt16(400)
                     .data;
 
+                pingInfo.lastTimestamp = Date.now();
                 client.sendPacket(pingPacket);
             }
         }
