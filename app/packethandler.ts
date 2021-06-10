@@ -26,16 +26,20 @@ class PacketHandler implements GenericPacketHandler {
     }
 
     private getJitterRemark(jitterPercentage: number): string {
-        if (jitterPercentage >= 0.3) {
+        if (jitterPercentage >= 0.5) {
             return "Really bad.";
         }
 
-        if (jitterPercentage >= 0.2) {
+        if (jitterPercentage >= 0.4) {
             return "High.";
         }
 
-        if (jitterPercentage >= 0.15) {
+        if (jitterPercentage >= 0.3) {
             return "Moderate.";
+        }
+
+        if (jitterPercentage >= 0.2) {
+            return "Fairly good.";
         }
 
         if (jitterPercentage >= 0.1) {
@@ -105,7 +109,7 @@ class PacketHandler implements GenericPacketHandler {
                 jitter /= pingInfo.pings.length - 1;
                 const jitterPercentage = jitter / avg;
                 client.extProperties.delete("ping-inprogress");
-                client.sendChatMessage(`[c/1CBAFF:Max:] ${max}. [c/1CBAFF:Min:] ${min}. [c/1CBAFF:Average:] ${avg.toFixed(1)}ms. [c/1CBAFF:Jitter:] ${jitter.toFixed(1)}ms (${(jitterPercentage * 100).toFixed(0)}%).`);
+                client.sendChatMessage(`[c/1CBAFF:Max:] ${max} +/- 16ms. [c/1CBAFF:Min:] ${min} +/- 16ms. [c/1CBAFF:Average:] ${avg.toFixed(1)}ms. [c/1CBAFF:Jitter:] ${jitter.toFixed(1)}ms (${(jitterPercentage * 100).toFixed(0)}%).`);
                 client.sendChatMessage(`[c/1CBAFF:Ping Remark:] ${this.getPingRemark(avg)} [c/1CBAFF:Jitter Remark:] ${this.getJitterRemark(jitterPercentage)}`);
             } else {
                 const pingPacket = new PacketWriter()
