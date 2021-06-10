@@ -93,11 +93,15 @@ class PacketHandler implements GenericPacketHandler {
         if (itemId === 400 && playerId === 255 && client.extProperties.has(Ping.inprogressKey)) {
             const pingInfo: PingInfo = client.extProperties.get(Ping.inprogressKey);
             const ping = (Date.now() - pingInfo.lastTimestamp);
-            if (pingInfo.pings.length === 0) {
-                pingInfo.samplesLeft = Math.ceil(5000 / ping);
-            }
             pingInfo.samplesLeft -= 1;
             pingInfo.pings.push(ping);
+            // We calculate a more accurate samples left from the current average
+            // so that we don't take forever to measure the ping stats
+            if (pingInfo.pings.length === 3) {
+                const avg = pingInfo.pings.reduce((acc, value) => acc + value, 0) / pingInfo.pings.length;
+                pingInfo.samplesLeft = Math.ceil(5000 / avg) - 3;
+            }
+
             if (pingInfo.samplesLeft <= 0) {
                 const max = Math.max(...pingInfo.pings);
                 const min = Math.min(...pingInfo.pings);
