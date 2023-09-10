@@ -15,7 +15,7 @@ class PingCommand extends CommandHandler {
         super(commandHandlers);
     }
 
-    public handle(command: Command, client: Client): void {
+    public handle(_command: Command, client: Client): void {
         const worldInfoSSC = getWorldInfo(client.server.world, {
             SSC: true,
             notExpert: !client.server.config.expert
@@ -26,7 +26,7 @@ class PingCommand extends CommandHandler {
         });
         const slotUpdate = new PacketWriter()
             .setType(PacketTypes.PlayerInventorySlot)
-            .packByte(client.id)
+            .packByte(client.id ?? 0)
             .packByte(139) // slot index
             .packInt16(0) // stack
             .packByte(1) // prefix

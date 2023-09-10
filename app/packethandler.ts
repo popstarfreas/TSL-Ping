@@ -1,15 +1,13 @@
-import PacketReader from "@popstarfreas/packetfactory/packetreader";
 import PacketTypes from "terrariaserver-lite/packettypes";
 import Client from "terrariaserver-lite/client";
 import GenericPacketHandler from "terrariaserver-lite/handlers/genericpackethandler";
 import Packet from "terrariaserver-lite/packet";
 import Ping from "./";
 
-class PacketHandler implements GenericPacketHandler {
-    private _ping: Ping;
+import * as PlayerInventorySlot from "@darkgaming/rescript-terrariapacket/src/packet/Packet_PlayerInventorySlot.gen";
 
-    constructor(ping: Ping) {
-        this._ping = ping;
+class PacketHandler implements GenericPacketHandler {
+    constructor(_ping: Ping) {
     }
 
     public handlePacket(client: Client, packet: Packet): boolean {
@@ -24,11 +22,12 @@ class PacketHandler implements GenericPacketHandler {
     }
 
     private handlePlayerInventorySlot(client: Client, packet: Packet): boolean {
-        const reader = new PacketReader(packet.data);
-        reader.readByte();
-        const slot = reader.readInt16();
+        const playerInventorySlot = PlayerInventorySlot.parse(packet.data);
+        if (typeof playerInventorySlot === "undefined") {
+            return false;
+        }
 
-        if (slot === 139 && client.extProperties.has("ping-inprogress")) {
+        if (playerInventorySlot.slot === 139 && client.extProperties.has("ping-inprogress")) {
             const pingInfo = client.extProperties.get("ping-inprogress");
             const ping = (Date.now() - pingInfo.timestamp);
             client.extProperties.delete("ping-inprogress");
