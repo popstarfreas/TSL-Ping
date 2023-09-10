@@ -5,7 +5,8 @@ import Client from "terrariaserver-lite/client";
 import Command from "terrariaserver-lite/command";
 import CommandHandler from "terrariaserver-lite/commandhandler";
 import CommandHandlers from "terrariaserver-lite/commandhandlers";
-import getWorldInfo from "terrariaserver-lite/packets/worldinfo";
+import Ping from "../../";
+import PingInfo from "../../pinginfo";
 
 class PingCommand extends CommandHandler {
     public names = ["ping"];
@@ -16,27 +17,19 @@ class PingCommand extends CommandHandler {
     }
 
     public handle(_command: Command, client: Client): void {
-        const worldInfoSSC = getWorldInfo(client.server.world, {
-            SSC: true,
-            notExpert: !client.server.config.expert
-        });
-        const worldInfoNonSSC = getWorldInfo(client.server.world, {
-            SSC: false,
-            notExpert: !client.server.config.expert
-        });
-        const slotUpdate = new PacketWriter()
-            .setType(PacketTypes.PlayerInventorySlot)
-            .packByte(client.id ?? 0)
-            .packByte(139) // slot index
-            .packInt16(0) // stack
-            .packByte(1) // prefix
-            .packInt16(20) // item net id
+        client.sendChatMessage("Measuring. Please wait.");
+        const pingPacket = new PacketWriter()
+            .setType(PacketTypes.RemoveItemOwner)
+            .packInt16(400)
             .data;
 
-        client.sendPacket(Buffer.concat([worldInfoSSC, slotUpdate, worldInfoNonSSC]));
-        client.extProperties.set("ping-inprogress", {
-            timestamp: Date.now()
-        });
+        client.sendPacket(pingPacket);
+        const info: PingInfo = {
+            pings: [],
+            lastTimestamp: Date.now(),
+            samplesLeft: 100,
+        }
+        client.extProperties.set(Ping.inprogressKey, info);
     }
 }
 
