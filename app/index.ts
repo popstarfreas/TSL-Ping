@@ -1,6 +1,7 @@
 import TerrariaServer from "terrariaserver-lite/terrariaserver";
 import Extension from "terrariaserver-lite/extensions/extension";
 import PacketHandler from "./packethandler";
+import PingCommand from "./commands/ping";
 
 class Ping extends Extension {
     public name = "Ping";
@@ -11,7 +12,7 @@ class Ping extends Extension {
     constructor(server: TerrariaServer) {
         super(server);
         this.packetHandler = new PacketHandler(this);
-        this.loadCommands(__dirname);
+        this.addCommand(new PingCommand(this.server.commandHandler));
     }
 }
 
