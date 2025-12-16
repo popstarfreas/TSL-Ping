@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd ./build && node --expose-gc ./app/index.js",
     "build": "tsc -p ./",
-    "build:packed": "tsc -p ./ && esbuild build/index.mjs --format=esm --bundle --platform=node --external:terrariaserver-lite --external:terraria-packet --outfile=output/index.mjs",
+    "build:packed": "tsc -p ./ && esbuild build/index.js --format=esm --bundle --platform=node --external:terrariaserver-lite --external:terraria-packet --outfile=output/index.mjs",
     "bstart": "tsc -p ./ && cd ./build && node --expose-gc ./app/index.js && cd ../",
     "bstart-debug": "tsc -p ./ && cd ./build && node-debug ./index.js && cd ../"
   },
