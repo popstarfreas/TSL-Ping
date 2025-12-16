@@ -1,7 +1,7 @@
 import TerrariaServer from "terrariaserver-lite/terrariaserver";
 import Extension from "terrariaserver-lite/extensions/extension";
-import PacketHandler from "./packethandler";
-import PingCommand from "./commands/ping";
+import PacketHandler from "./packethandler.js";
+import PingCommand from "./commands/ping/index.js";
 
 class Ping extends Extension {
     public name = "Ping";

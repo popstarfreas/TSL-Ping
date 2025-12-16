@@ -1,21 +1,22 @@
 {
   "name": "ping",
+  "type": "module",
   "version": "0.1.0",
   "description": "",
   "scripts": {
     "start": "cd ./build && node --expose-gc ./app/index.js",
     "build": "tsc -p ./",
-    "build:packed": "tsc -p ./ && esbuild build/index.js --bundle --platform=node --outfile=output/index.js",
+    "build:packed": "tsc -p ./ && esbuild build/index.mjs --format=esm --bundle --platform=node --external:terrariaserver-lite --external:terraria-packet --outfile=output/index.mjs",
     "bstart": "tsc -p ./ && cd ./build && node --expose-gc ./app/index.js && cd ../",
     "bstart-debug": "tsc -p ./ && cd ./build && node-debug ./index.js && cd ../"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@darkgaming/rescript-terrariapacket": "github:popstarfreas/rescript-terrariapacket#3c76ed0",
+    "terraria-packet": "github:popstarfreas/rescript-terrariapacket#c7d2f4d97565405611caccc7d0b81974654d5a61",
     "@types/node": "^20.6.0",
     "esbuild": "^0.19.2",
-    "terrariaserver-lite": "./TerrariaServer-Lite/pluginreference",
+    "terrariaserver-lite": "./TerrariaServer-Lite",
     "typescript": "^5.2.2"
   }
 }
