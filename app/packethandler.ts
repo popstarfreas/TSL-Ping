@@ -2,11 +2,9 @@ import PacketTypes from "terrariaserver-lite/packettypes";
 import Client from "terrariaserver-lite/client";
 import GenericPacketHandler from "terrariaserver-lite/handlers/genericpackethandler";
 import Packet from "terrariaserver-lite/packet";
-import Ping from "./";
-import PingInfo from "./pinginfo";
-import PacketWriter from "@popstarfreas/packetfactory/packetwriter";
-
-import * as ItemOwner from "@darkgaming/rescript-terrariapacket/src/packet/Packet_ItemOwner.gen";
+import Ping from "./index.js";
+import PingInfo from "./pinginfo.js";
+import { ItemOwnerPacket, ItemOwnerRemovePacket } from "terraria-packet";
 
 class PacketHandler implements GenericPacketHandler {
     constructor(_ping: Ping) {
@@ -84,11 +82,17 @@ class PacketHandler implements GenericPacketHandler {
     }
 
     private handleUpdateItemOwner(client: Client, packet: Packet): boolean {
-        const itemOwner = ItemOwner.parse(packet.data);
-        if (typeof itemOwner === "undefined") {
+        const itemOwnerResult = ItemOwnerPacket.parse(packet.data);
+        if (itemOwnerResult.TAG === "Error") {
+            if (itemOwnerResult._0.error instanceof Error) {
+                client.server.logger.error(`Failed to parse packet for ping command: ${itemOwnerResult._0.context}; ${itemOwnerResult._0.error.message}`);
+            } else {
+                client.server.logger.error(`Failed to parse packet for ping command: ${itemOwnerResult._0.context}`);
+            }
             return false;
         }
 
+        const itemOwner = itemOwnerResult._0;
         if (itemOwner.itemDropId === 400 && itemOwner.owner === 255 && client.extProperties.has(Ping.inprogressKey)) {
             const pingInfo: PingInfo = client.extProperties.get(Ping.inprogressKey);
             const ping = (Date.now() - pingInfo.lastTimestamp);
@@ -117,11 +121,20 @@ class PacketHandler implements GenericPacketHandler {
                 client.sendChatMessage(`[c/1CBAFF:Max:] ${max}. [c/1CBAFF:Min:] ${min}. [c/1CBAFF:Average:] ${avg.toFixed(1)}ms. [c/1CBAFF:Jitter:] ${jitter.toFixed(1)}ms (${(jitterPercentage * 100).toFixed(0)}%).`);
                 client.sendChatMessage(`[c/1CBAFF:Ping Remark:] ${this.getPingRemark(avg)} [c/1CBAFF:Jitter Remark:] ${this.getJitterRemark(jitterPercentage)}`);
             } else {
-                const pingPacket = new PacketWriter()
-                    .setType(PacketTypes.RemoveItemOwner)
-                    .packInt16(400)
-                    .data;
+                const pingPacketResult = ItemOwnerRemovePacket.toBuffer({
+                    itemDropId: 400
+                })
 
+                if (pingPacketResult.TAG === "Error") {
+                    if (pingPacketResult._0.error instanceof Error) {
+                        client.server.logger.error(`Failed to create packet for ping command: ${pingPacketResult._0.context}; ${pingPacketResult._0.error.message}`);
+                    } else {
+                        client.server.logger.error(`Failed to create packet for ping command: ${pingPacketResult._0.context}`);
+                    }
+                    return false;
+                }
+
+                const pingPacket = pingPacketResult._0;
                 pingInfo.lastTimestamp = Date.now();
                 client.sendPacket(pingPacket);
             }
